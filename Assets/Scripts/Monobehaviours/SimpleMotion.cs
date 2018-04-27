@@ -27,9 +27,7 @@ public class SimpleMotion : MonoBehaviour
 
     [Header("Dropdowns")]
     public Dropdown graphDropdown;
-    public Dropdown graphableDropdown1;
-    public Dropdown graphableDropdown2;
-    public Dropdown graphableDropdown3;
+    public Dropdown[] valuesDropdowns;
     public Dropdown baseDropdown;
 
     [Header("Toggles")]
@@ -59,9 +57,7 @@ public class SimpleMotion : MonoBehaviour
 
     [Header("Graphable Values")]
     public GameObject graphableValuesGraph;
-    public Transform tracer1;
-    public Transform tracer2;
-    public Transform tracer3;
+    public Transform[] tracers;
 
     public enum VisibleObjects
     {
@@ -247,9 +243,8 @@ public class SimpleMotion : MonoBehaviour
                 break;
 
             case VisibleObjects.GraphableGraph:
-                tracer1.GetComponent<TrailRenderer>().Clear();
-                tracer2.GetComponent<TrailRenderer>().Clear();
-                tracer3.GetComponent<TrailRenderer>().Clear();
+                foreach(Transform tracer in tracers)
+                    tracer.GetComponent<TrailRenderer>().Clear();
                 break;
         }
 
@@ -294,11 +289,12 @@ public class SimpleMotion : MonoBehaviour
     {
 
         float yParam = SetParamFromDropdown(baseDropdown);
-        Debug.Log(yParam);
 
-        SetTracerPos(tracer1, yParam, SetParamFromDropdown(graphableDropdown1));
-        SetTracerPos(tracer2, yParam, SetParamFromDropdown(graphableDropdown2));
-        SetTracerPos(tracer3, yParam, SetParamFromDropdown(graphableDropdown3));
+        for (int i = 0; i < tracers.Length; i++)
+        {
+            if (tracers[i].gameObject.activeSelf)
+                SetTracerPos(tracers[i],yParam, SetParamFromDropdown(valuesDropdowns[i]));
+        }
 
     }
 
@@ -344,5 +340,11 @@ public class SimpleMotion : MonoBehaviour
     {
         ResetTime();
         ResetDisplays();
+    }
+
+    public void ManageTracerActivity(int index)
+    {
+        if (valuesDropdowns[index].value == 0) tracers[index].gameObject.SetActive(false);
+        else tracers[index].gameObject.SetActive(true);
     }
 }
