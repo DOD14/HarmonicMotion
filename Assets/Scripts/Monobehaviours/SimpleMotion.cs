@@ -19,6 +19,9 @@ public class SimpleMotion : MonoBehaviour
     public InputField massInputField;
     public InputField phiInputField;
 
+    [Header("Dropdowns")]
+    public Dropdown graphDropdown;
+
     [Header("Toggles")]
     public Toggle omegaToggle;
     public Toggle KToggle;
@@ -85,8 +88,7 @@ public class SimpleMotion : MonoBehaviour
                 break;
 
             case VisibleObjects.PhasorGraph:
-                phasorTracer.localPosition = new Vector3(amplitude, 0f, 0f);
-                phasorParent.Rotate(new Vector3(0f, 0f, omega * Mathf.PI * Mathf.Rad2Deg * Time.deltaTime));
+                ManagePhasorGraph();
                 break;
         }
 
@@ -107,6 +109,8 @@ public class SimpleMotion : MonoBehaviour
     {
         GetFloatFromInputField(ref amplitude, amplitudeInputField);
         GetFloatFromInputField(ref phi, phiInputField);
+
+        ResetDisplays();
     }
     
     public void ManageDependentInput()
@@ -141,6 +145,8 @@ public class SimpleMotion : MonoBehaviour
 
             SetInputFieldTextFromFloat(massInputField, mass);
         }
+
+        ResetDisplays();
 
     }
 
@@ -192,4 +198,40 @@ public class SimpleMotion : MonoBehaviour
 
     }
 
+    void ManagePhasorGraph()
+    {
+        phasorTracer.localPosition = new Vector3(amplitude, 0f, 0f);
+        phasorParent.Rotate(new Vector3(0f, 0f, omega * Mathf.PI * Mathf.Rad2Deg * Time.deltaTime));
+    }
+
+    void ResetDisplays()
+    {
+        switch (displayOption)
+        {
+            case VisibleObjects.System:
+                SetCubePos();
+                break;
+
+            case VisibleObjects.PhasorGraph:
+                phasorParent.rotation = Quaternion.identity;
+                phasorParent.Rotate(new Vector3(0f, 0f, Mathf.PI * phi * Mathf.Rad2Deg));
+                break;
+        }
+    }
+
+    public void DropdownSelectGraph()
+    {
+        switch(graphDropdown.value)
+        {
+            case 0:
+                displayOption = VisibleObjects.System;
+                break;
+
+            case 1:
+                displayOption = VisibleObjects.PhasorGraph;
+                break;        
+        }
+
+        ResetDisplays();
+    }
 }
