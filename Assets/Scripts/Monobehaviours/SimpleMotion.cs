@@ -5,12 +5,18 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 public class SimpleMotion : MonoBehaviour
 {
+    /*
     [Header("Input")]
     public float amplitude = 5f;
     public float omega = 3f;
     public float K = 16;
     public float mass = 1f;
     public float phi = 0f;
+    */
+
+    [Header("Tweaks")]
+    public float yScaleFactor = 4f;
+    public float xScaleFactor = 2f;
 
     [Header("Input Fields")]
     public InputField amplitudeInputField;
@@ -21,6 +27,10 @@ public class SimpleMotion : MonoBehaviour
 
     [Header("Dropdowns")]
     public Dropdown graphDropdown;
+    public Dropdown graphableDropdown1;
+    public Dropdown graphableDropdown2;
+    public Dropdown graphableDropdown3;
+    public Dropdown baseDropdown;
 
     [Header("Toggles")]
     public Toggle omegaToggle;
@@ -47,15 +57,27 @@ public class SimpleMotion : MonoBehaviour
     public Transform phasorParent;
     public Transform phasorTracer;
 
+    [Header("Graphable Values")]
+    public GameObject graphableValuesGraph;
+    public Transform tracer1;
+    public Transform tracer2;
+    public Transform tracer3;
+
     public enum VisibleObjects
     {
         System,
-        PhasorGraph
+        PhasorGraph,
+        GraphableGraph
     };
 
     [Header("Visible Objects")]
     public VisibleObjects displayOption;
 
+    private float amplitude = 5f;
+    private float omega = 3f;
+    private float K = 16;
+    private float mass = 1f;
+    private float phi = 0f;
 
     private float x = 0;
     private float v;
@@ -63,13 +85,16 @@ public class SimpleMotion : MonoBehaviour
 
     private float currentTime = 0f;
 
+    private float sinus;
+    private float cosinus;
+
 
     void Start()
     {
         GetBaseInput();
         ManageDependentInput();
 
-        GetCubePos();
+        SetCubePos();
 
         CalculateAndOutputValues();
     }
@@ -79,7 +104,10 @@ public class SimpleMotion : MonoBehaviour
     {
         UpdateTime();
 
-        GetCubePos();
+        sinus = Mathf.Sin((currentTime * omega + phi) * Mathf.PI);
+        cosinus = Mathf.Cos((currentTime * omega + phi) * Mathf.PI);
+
+        CalculateAndOutputValues();
 
         switch (displayOption)
         {
@@ -90,14 +118,12 @@ public class SimpleMotion : MonoBehaviour
             case VisibleObjects.PhasorGraph:
                 ManagePhasorGraph();
                 break;
+
+            case VisibleObjects.GraphableGraph:
+                ManageGraphableValues();
+                break;
         }
 
-        CalculateAndOutputValues();
-    }
-
-    void GetCubePos()
-    {
-        x = amplitude * Mathf.Sin((currentTime * omega + phi) * Mathf.PI);
     }
 
     void SetCubePos()
@@ -185,7 +211,8 @@ public class SimpleMotion : MonoBehaviour
 
     void CalculateAndOutputValues()
     {
-        v = omega * amplitude * Mathf.Cos((currentTime * omega + phi) * Mathf.PI);
+        x = amplitude * sinus;
+        v = omega * amplitude * cosinus;
         a = -omega * omega * x;
 
         SetTextFromFloat(xText, x, "x = ");
@@ -206,6 +233,8 @@ public class SimpleMotion : MonoBehaviour
 
     void ResetDisplays()
     {
+        ResetTime();
+
         switch (displayOption)
         {
             case VisibleObjects.System:
@@ -216,7 +245,14 @@ public class SimpleMotion : MonoBehaviour
                 phasorParent.rotation = Quaternion.identity;
                 phasorParent.Rotate(new Vector3(0f, 0f, Mathf.PI * phi * Mathf.Rad2Deg));
                 break;
+
+            case VisibleObjects.GraphableGraph:
+                tracer1.GetComponent<TrailRenderer>().Clear();
+                tracer2.GetComponent<TrailRenderer>().Clear();
+                tracer3.GetComponent<TrailRenderer>().Clear();
+                break;
         }
+
     }
 
     public void DropdownSelectGraph()
@@ -225,13 +261,88 @@ public class SimpleMotion : MonoBehaviour
         {
             case 0:
                 displayOption = VisibleObjects.System;
+
+                system.SetActive(true);
+                phasorGraph.SetActive(false);
+                graphableValuesGraph.SetActive(false);
+
                 break;
 
             case 1:
                 displayOption = VisibleObjects.PhasorGraph;
-                break;        
+
+                system.SetActive(false);
+                phasorGraph.SetActive(true);
+                graphableValuesGraph.SetActive(false);
+
+                break;   
+
+            case 2:
+                displayOption = VisibleObjects.GraphableGraph;
+
+                system.SetActive(false);
+                phasorGraph.SetActive(false);
+                graphableValuesGraph.SetActive(true);
+
+                break;
         }
 
+        ResetDisplays();
+    }
+
+    void ManageGraphableValues()
+    {
+
+        float yParam = SetParamFromDropdown(baseDropdown);
+        Debug.Log(yParam);
+
+        SetTracerPos(tracer1, yParam, SetParamFromDropdown(graphableDropdown1));
+        SetTracerPos(tracer2, yParam, SetParamFromDropdown(graphableDropdown2));
+        SetTracerPos(tracer3, yParam, SetParamFromDropdown(graphableDropdown3));
+
+    }
+
+    void SetTracerPos(Transform tracer, float xParam, float yParam)
+    {
+        
+        tracer.position = new Vector3(xScaleFactor * xParam, yScaleFactor * yParam, 0f);
+
+    }
+
+    float SetParamFromDropdown(Dropdown dropdown)
+    {
+        switch(dropdown.value)
+        {
+            case 1:
+                return sinus;
+
+            case 2:
+                return cosinus;
+
+            case 3:
+                return -sinus;
+
+            case 4:
+                return currentTime;
+
+            case 5:
+                return cosinus * cosinus;
+
+            case 6:
+                return sinus * sinus;
+
+            case 7:
+                return 1;
+
+            default:
+                return 0;
+        }
+
+    }
+
+    public void ResetTimeAndDisplay()
+    {
+        ResetTime();
         ResetDisplays();
     }
 }
