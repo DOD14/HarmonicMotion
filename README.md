@@ -22,3 +22,5 @@ Set up the main menu with buttons for scenes, help, quit
 Set up zoom and pan controls
 
 Use the back button on the phone?
+
+Make the UI nice and more equally spaced
