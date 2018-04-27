@@ -24,3 +24,7 @@ Use the back button on the phone?
 Make the UI nice and more equally spaced
 
 The graphs/diagrams might look better with visible tracers (quad/sphere child)
+
+Give the trail renderers different colors
+
+Start hunting for bugs
