@@ -28,3 +28,5 @@ The graphs/diagrams might look better with visible tracers (quad/sphere child)
 Give the trail renderers different colors
 
 Start hunting for bugs
+
+set up markers for the parallel oscillations
