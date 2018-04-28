@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
-public class SimpleMotion : MonoBehaviour
+public class ParallelMotion : MonoBehaviour
 {
     /*
     [Header("Input")]
@@ -19,41 +19,32 @@ public class SimpleMotion : MonoBehaviour
     public float xScaleFactor = 2f;
 
     [Header("Input Fields")]
-    public InputField amplitudeInputField;
-    public InputField omegaInputField;
-    public InputField KInputField;
-    public InputField massInputField;
-    public InputField phiInputField;
+    public InputField[] amplitudeInputFields;
+    public InputField[] omegaInputFields;
+    public InputField[] phiInputFields;
 
     [Header("Dropdowns")]
     public Dropdown graphDropdown;
     public Dropdown[] valuesDropdowns;
     public Dropdown baseDropdown;
 
-    [Header("Toggles")]
-    public Toggle omegaToggle;
-    public Toggle KToggle;
-    public Toggle massToggle;
-
     [Header("Button Text")]
     public Text timescaleButtonText;
 
     [Header("Output Text")]
-    public Text xText;
-    public Text vText;
-    public Text aText;
-    public Text ETText;
-    public Text EKText;
-    public Text EPText;
+    public Text[] xTexts;
+    public Text[] vTexts;
+    public Text[] aTexts;
 
     [Header("System")]
     public GameObject system;
     public Transform cube;
+    public Transform[] markers;
 
     [Header("Phasor Graph")]
     public GameObject phasorGraph;
-    public Transform phasorParent;
-    public Transform phasorTracer;
+    public Transform[] phasorParents;
+    public Transform[] phasorTracers;
 
     [Header("Graphable Values")]
     public GameObject graphableValuesGraph;
@@ -69,26 +60,23 @@ public class SimpleMotion : MonoBehaviour
     [Header("Visible Objects")]
     public VisibleObjects displayOption;
 
-    private float amplitude = 5f;
-    private float omega = 3f;
-    private float K = 16;
-    private float mass = 1f;
-    private float phi = 0f;
+    private float[] amplitudes = new float[3];
+    private float[] omegas = new float[2];
+    private float[] phis = new float[2];
 
-    private float x = 0;
-    private float v;
-    private float a;
+    private float[] x = new float[3];
+    private float[] v = new float[3];
+    private float[] a = new float[3];
 
     private float currentTime = 0f;
 
-    private float sinus;
-    private float cosinus;
+    private float[] sinus = new float[2];
+    private float[] cosinus = new float[2];
 
 
     void Start()
     {
-        GetBaseInput();
-        ManageDependentInput();
+        GetInput();
 
         CalculateAndOutputValues();
 
@@ -101,8 +89,12 @@ public class SimpleMotion : MonoBehaviour
     {
         UpdateTime();
 
-        sinus = Mathf.Sin((currentTime * omega + phi) * Mathf.PI);
-        cosinus = Mathf.Cos((currentTime * omega + phi) * Mathf.PI);
+        for (int i = 0; i < 2; i++)
+        {
+            sinus[i] = Mathf.Sin((currentTime * omegas[i] + phis[i]) * Mathf.PI);
+            cosinus[i] = Mathf.Cos((currentTime * omegas[i] + phis[i]) * Mathf.PI);
+        }
+    
 
         CalculateAndOutputValues();
 
@@ -128,49 +120,16 @@ public class SimpleMotion : MonoBehaviour
         cube.position = new Vector3(x, 0f, 0f);
     }
 
-    public void GetBaseInput()
+    public void GetInput()
     {
-        GetFloatFromInputField(ref amplitude, amplitudeInputField);
-        GetFloatFromInputField(ref phi, phiInputField);
-
-        ResetDisplays();
-    }
-    
-    public void ManageDependentInput()
-    {
-        if(omegaToggle.isOn)
+        for (int i = 0; i < 2; i++)
         {
-            GetFloatFromInputField(ref K, KInputField);
-            GetFloatFromInputField(ref mass, massInputField);
-
-            omega = Mathf.Sqrt(K / mass);
-
-            SetInputFieldTextFromFloat(omegaInputField, omega);
+            GetFloatFromInputField(ref amplitudes[i], amplitudeInputFields[i]);
+            GetFloatFromInputField(ref phis[i], phiInputFields[i]);
+            GetFloatFromInputField(ref omegas[i], omegaInputFields[i]);
         }
 
-        else if (KToggle.isOn)
-        {
-            GetFloatFromInputField(ref omega, omegaInputField);
-            GetFloatFromInputField(ref mass, massInputField);
-
-            K = mass * omega * omega;
-
-            SetInputFieldTextFromFloat(KInputField, K);
-
-        }
-
-        else if (massToggle.isOn)
-        {
-            GetFloatFromInputField(ref K, KInputField);
-            GetFloatFromInputField(ref omega, omegaInputField);
-
-            mass = K / (omega * omega);
-
-            SetInputFieldTextFromFloat(massInputField, mass);
-        }
-
-        ResetDisplays();
-
+        AddIntoThirdFloat(amplitudes);
     }
 
     void ResetTime()
@@ -208,17 +167,23 @@ public class SimpleMotion : MonoBehaviour
 
     void CalculateAndOutputValues()
     {
-        x = amplitude * sinus;
-        v = omega * amplitude * cosinus;
-        a = -omega * omega * x;
+        for (int i = 0; i < amplitudes.Length-1; i++)
+        {
+            x[i] = amplitudes[i] * sinus[i];
+            v[i] = omegas[i] * amplitudes[i] * cosinus[i];
+            a[i] = -omegas[i] * omegas[i] * x[i];
+        }
 
-        SetTextFromFloat(xText, x, "x = ");
-        SetTextFromFloat(vText, v, "v = ");
-        SetTextFromFloat(aText, a, "a = ");
+        AddIntoThirdFloat(x);
+        AddIntoThirdFloat(v);
+        AddIntoThirdFloat(a);
 
-        SetTextFromFloat(ETText, K * amplitude * amplitude, "ET = ");
-        SetTextFromFloat(EPText, K * x * x, "EP = ");
-        SetTextFromFloat(EKText, mass * v * v * 0.5f, "EK = ");
+        for (int i = 0; i < amplitudes.Length; i++)
+        {
+            SetTextFromFloat(xTexts[i], x[i], "x = ");
+            SetTextFromFloat(vTexts[i], v[i], "v = ");
+            SetTextFromFloat(aTexts[i], a[i], "a = ");
+        }
 
     }
 
@@ -347,5 +312,10 @@ public class SimpleMotion : MonoBehaviour
     {
         if (valuesDropdowns[index].value == 0) tracers[index].gameObject.SetActive(false);
         else tracers[index].gameObject.SetActive(true);
+    }
+
+    void AddIntoThirdFloat(float[] value)
+    {
+        value[2] = value[0] + value[1];
     }
 }
