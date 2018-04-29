@@ -25,8 +25,7 @@ public class ParallelMotion : MonoBehaviour
 
     [Header("Dropdowns")]
     public Dropdown graphDropdown;
-    public Dropdown[] valuesDropdowns;
-    public Dropdown baseDropdown;
+    public Dropdown valuesDropdown;
 
     [Header("Button Text")]
     public Text timescaleButtonText;
@@ -73,9 +72,13 @@ public class ParallelMotion : MonoBehaviour
     private float[] sinus = new float[2];
     private float[] cosinus = new float[2];
 
+    private int oscillationsNumber;
+
 
     void Start()
     {
+        oscillationsNumber = amplitudes.Length;
+
         GetInput();
 
         CalculateAndOutputValues();
@@ -89,7 +92,7 @@ public class ParallelMotion : MonoBehaviour
     {
         UpdateTime();
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < oscillationsNumber-1; i++)
         {
             sinus[i] = Mathf.Sin((currentTime * omegas[i] + phis[i]) * Mathf.PI);
             cosinus[i] = Mathf.Cos((currentTime * omegas[i] + phis[i]) * Mathf.PI);
@@ -117,19 +120,21 @@ public class ParallelMotion : MonoBehaviour
 
     void SetCubePos()
     {
-        cube.position = new Vector3(x, 0f, 0f);
+        cube.position = new Vector3(x[oscillationsNumber-1], 0f, 0f);
     }
 
     public void GetInput()
     {
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < oscillationsNumber-1; i++)
         {
             GetFloatFromInputField(ref amplitudes[i], amplitudeInputFields[i]);
             GetFloatFromInputField(ref phis[i], phiInputFields[i]);
             GetFloatFromInputField(ref omegas[i], omegaInputFields[i]);
         }
 
-        AddIntoThirdFloat(amplitudes);
+        AddIntoLastFloat(amplitudes);
+
+        ResetTimeAndDisplay();
     }
 
     void ResetTime()
@@ -167,18 +172,18 @@ public class ParallelMotion : MonoBehaviour
 
     void CalculateAndOutputValues()
     {
-        for (int i = 0; i < amplitudes.Length-1; i++)
+        for (int i = 0; i < oscillationsNumber-1; i++)
         {
             x[i] = amplitudes[i] * sinus[i];
             v[i] = omegas[i] * amplitudes[i] * cosinus[i];
             a[i] = -omegas[i] * omegas[i] * x[i];
         }
 
-        AddIntoThirdFloat(x);
-        AddIntoThirdFloat(v);
-        AddIntoThirdFloat(a);
+        AddIntoLastFloat(x);
+        AddIntoLastFloat(v);
+        AddIntoLastFloat(a);
 
-        for (int i = 0; i < amplitudes.Length; i++)
+        for (int i = 0; i < oscillationsNumber; i++)
         {
             SetTextFromFloat(xTexts[i], x[i], "x = ");
             SetTextFromFloat(vTexts[i], v[i], "v = ");
@@ -189,8 +194,14 @@ public class ParallelMotion : MonoBehaviour
 
     void ManagePhasorGraph()
     {
-        phasorTracer.localPosition = new Vector3(amplitude, 0f, 0f);
-        phasorParent.Rotate(new Vector3(0f, 0f, omega * Mathf.PI * Mathf.Rad2Deg * Time.deltaTime));
+        for (int i = 0; i < oscillationsNumber-1; i++)
+        {
+            phasorTracers[i].localPosition = new Vector3(amplitudes[i], 0f, 0f);
+            phasorParents[i].Rotate(new Vector3(0f, 0f, omegas[i] * Mathf.PI * Mathf.Rad2Deg * Time.deltaTime));
+        }
+
+        AddIntoLastTransformPos(phasorTracers);
+
     }
 
     void ResetDisplays()
@@ -204,8 +215,12 @@ public class ParallelMotion : MonoBehaviour
                 break;
 
             case VisibleObjects.PhasorGraph:
-                phasorParent.rotation = Quaternion.identity;
-                phasorParent.Rotate(new Vector3(0f, 0f, Mathf.PI * phi * Mathf.Rad2Deg));
+                for (int i = 0; i < oscillationsNumber-1; i++)
+                {
+                    phasorParents[i].rotation = Quaternion.identity;
+                    phasorParents[i].Rotate(new Vector3(0f, 0f, Mathf.PI * phis[i] * Mathf.Rad2Deg));
+                }
+                AddIntoLastTransformPos(phasorTracers);
                 break;
 
             case VisibleObjects.GraphableGraph:
@@ -254,47 +269,34 @@ public class ParallelMotion : MonoBehaviour
     void ManageGraphableValues()
     {
 
-        float yParam = SetParamFromDropdown(baseDropdown);
+        float yParam = currentTime;
 
-        for (int i = 0; i < tracers.Length; i++)
+        for (int i = 0; i < tracers.Length-1; i++)
         {
-            if (tracers[i].gameObject.activeSelf)
-                SetTracerPos(tracers[i],yParam, SetParamFromDropdown(valuesDropdowns[i]));
+            SetTracerPos(tracers[i],yParam, SetParamFromDropdown(i));
         }
+
+
 
     }
 
     void SetTracerPos(Transform tracer, float xParam, float yParam)
     {
-        
         tracer.position = new Vector3(xScaleFactor * xParam, yScaleFactor * yParam, 0f);
-
     }
 
-    float SetParamFromDropdown(Dropdown dropdown)
+    float SetParamFromDropdown(int i)
     {
-        switch(dropdown.value)
+        switch(valuesDropdown.value)
         {
+            case 0:
+                return sinus[i];
+
             case 1:
-                return sinus;
+                return cosinus[i];
 
             case 2:
-                return cosinus;
-
-            case 3:
-                return -sinus;
-
-            case 4:
-                return currentTime;
-
-            case 5:
-                return cosinus * cosinus;
-
-            case 6:
-                return sinus * sinus;
-
-            case 7:
-                return 1;
+                return -sinus[i];
 
             default:
                 return 0;
@@ -308,14 +310,23 @@ public class ParallelMotion : MonoBehaviour
         ResetDisplays();
     }
 
-    public void ManageTracerActivity(int index)
+    void AddIntoLastFloat(float[] values)
     {
-        if (valuesDropdowns[index].value == 0) tracers[index].gameObject.SetActive(false);
-        else tracers[index].gameObject.SetActive(true);
+        values[values.Length-1] = 0;
+
+        for (int i = 0; i < values.Length-1; i++)
+        {
+            values[values.Length-1] += values[i];
+        }
     }
 
-    void AddIntoThirdFloat(float[] value)
+    void AddIntoLastTransformPos(Transform[] values)
     {
-        value[2] = value[0] + value[1];
+        values[values.Length-1].position = Vector3.zero;
+
+        for (int i = 0; i < values.Length - 1; i++)
+        {
+            values[values.Length-1].position += values[i].position;
+        }
     }
 }
