@@ -29,4 +29,10 @@ Give the trail renderers different colors
 
 Start hunting for bugs
 
-set up markers for the parallel oscillations
+Set up markers for the parallel oscillations
+
+Eventually expand parallel oscillations for more input, use a scroll view and add +/- buttons
+
+Make the toggles larger and easier to tap
+
+Re-do UI for parallel
