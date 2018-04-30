@@ -72,6 +72,9 @@ public class ParallelMotion : MonoBehaviour
     private float[] sinus = new float[2];
     private float[] cosinus = new float[2];
 
+    private float maxV;
+    private float maxA;
+
     private int oscillationsNumber;
 
 
@@ -105,6 +108,7 @@ public class ParallelMotion : MonoBehaviour
         {
             case VisibleObjects.System:
                 SetCubePos();
+                ManageMarkers();
                 break;
 
             case VisibleObjects.PhasorGraph:
@@ -125,11 +129,17 @@ public class ParallelMotion : MonoBehaviour
 
     public void GetInput()
     {
+        maxV = 0;
+        maxA = 0;
+
         for (int i = 0; i < oscillationsNumber-1; i++)
         {
             GetFloatFromInputField(ref amplitudes[i], amplitudeInputFields[i]);
             GetFloatFromInputField(ref phis[i], phiInputFields[i]);
             GetFloatFromInputField(ref omegas[i], omegaInputFields[i]);
+
+            maxV += amplitudes[i] * omegas[i];
+            maxA += amplitudes[i] * omegas[i] * omegas[i];
         }
 
         AddIntoLastFloat(amplitudes);
@@ -271,9 +281,9 @@ public class ParallelMotion : MonoBehaviour
 
         float yParam = currentTime;
 
-        for (int i = 0; i < tracers.Length-1; i++)
+        for (int i = 0; i < oscillationsNumber; i++)
         {
-            SetTracerPos(tracers[i],yParam, SetParamFromDropdown(i));
+            SetTracerPos(tracers[i], yParam, SetParamFromDropdown(i));
         }
 
 
@@ -290,13 +300,13 @@ public class ParallelMotion : MonoBehaviour
         switch(valuesDropdown.value)
         {
             case 0:
-                return sinus[i];
+                return x[i]/amplitudes[oscillationsNumber - 1];
 
             case 1:
-                return cosinus[i];
+                return v[i]/maxV ;
 
             case 2:
-                return -sinus[i];
+                return a[i]/maxA;
 
             default:
                 return 0;
@@ -327,6 +337,15 @@ public class ParallelMotion : MonoBehaviour
         for (int i = 0; i < values.Length - 1; i++)
         {
             values[values.Length-1].position += values[i].position;
+        }
+    }
+
+    void ManageMarkers()
+    {
+        if (markers[0].parent.gameObject.activeSelf == false) return;
+        for (int i = 0; i < oscillationsNumber-1; i++)
+        {
+            markers[i].position = new Vector3(x[i], -2*i-2, 0f);
         }
     }
 }
