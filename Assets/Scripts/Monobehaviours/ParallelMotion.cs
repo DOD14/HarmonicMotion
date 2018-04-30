@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
-public class SimpleMotion : MonoBehaviour
+public class ParallelMotion : MonoBehaviour
 {
     /*
     [Header("Input")]
@@ -19,41 +19,31 @@ public class SimpleMotion : MonoBehaviour
     public float xScaleFactor = 2f;
 
     [Header("Input Fields")]
-    public InputField amplitudeInputField;
-    public InputField omegaInputField;
-    public InputField KInputField;
-    public InputField massInputField;
-    public InputField phiInputField;
+    public InputField[] amplitudeInputFields;
+    public InputField[] omegaInputFields;
+    public InputField[] phiInputFields;
 
     [Header("Dropdowns")]
     public Dropdown graphDropdown;
-    public Dropdown[] valuesDropdowns;
-    public Dropdown baseDropdown;
-
-    [Header("Toggles")]
-    public Toggle omegaToggle;
-    public Toggle KToggle;
-    public Toggle massToggle;
+    public Dropdown valuesDropdown;
 
     [Header("Button Text")]
     public Text timescaleButtonText;
 
     [Header("Output Text")]
-    public Text xText;
-    public Text vText;
-    public Text aText;
-    public Text ETText;
-    public Text EKText;
-    public Text EPText;
+    public Text[] xTexts;
+    public Text[] vTexts;
+    public Text[] aTexts;
 
     [Header("System")]
     public GameObject system;
     public Transform cube;
+    public Transform[] markers;
 
     [Header("Phasor Graph")]
     public GameObject phasorGraph;
-    public Transform phasorParent;
-    public Transform phasorTracer;
+    public Transform[] phasorParents;
+    public Transform[] phasorTracers;
 
     [Header("Graphable Values")]
     public GameObject graphableValuesGraph;
@@ -69,26 +59,30 @@ public class SimpleMotion : MonoBehaviour
     [Header("Visible Objects")]
     public VisibleObjects displayOption;
 
-    private float amplitude = 5f;
-    private float omega = 3f;
-    private float K = 16;
-    private float mass = 1f;
-    private float phi = 0f;
+    private float[] amplitudes = new float[3];
+    private float[] omegas = new float[2];
+    private float[] phis = new float[2];
 
-    private float x = 0;
-    private float v;
-    private float a;
+    private float[] x = new float[3];
+    private float[] v = new float[3];
+    private float[] a = new float[3];
 
     private float currentTime = 0f;
 
-    private float sinus;
-    private float cosinus;
+    private float[] sinus = new float[2];
+    private float[] cosinus = new float[2];
+
+    private float maxV;
+    private float maxA;
+
+    private int oscillationsNumber;
 
 
     void Start()
     {
-        GetBaseInput();
-        ManageDependentInput();
+        oscillationsNumber = amplitudes.Length;
+
+        GetInput();
 
         CalculateAndOutputValues();
 
@@ -101,8 +95,12 @@ public class SimpleMotion : MonoBehaviour
     {
         UpdateTime();
 
-        sinus = Mathf.Sin((currentTime * omega + phi) * Mathf.PI);
-        cosinus = Mathf.Cos((currentTime * omega + phi) * Mathf.PI);
+        for (int i = 0; i < oscillationsNumber-1; i++)
+        {
+            sinus[i] = Mathf.Sin((currentTime * omegas[i] + phis[i]) * Mathf.PI);
+            cosinus[i] = Mathf.Cos((currentTime * omegas[i] + phis[i]) * Mathf.PI);
+        }
+    
 
         CalculateAndOutputValues();
 
@@ -110,6 +108,7 @@ public class SimpleMotion : MonoBehaviour
         {
             case VisibleObjects.System:
                 SetCubePos();
+                ManageMarkers();
                 break;
 
             case VisibleObjects.PhasorGraph:
@@ -125,52 +124,27 @@ public class SimpleMotion : MonoBehaviour
 
     void SetCubePos()
     {
-        cube.position = new Vector3(x, 0f, 0f);
+        cube.position = new Vector3(x[oscillationsNumber-1], 0f, 0f);
     }
 
-    public void GetBaseInput()
+    public void GetInput()
     {
-        GetFloatFromInputField(ref amplitude, amplitudeInputField);
-        GetFloatFromInputField(ref phi, phiInputField);
+        maxV = 0;
+        maxA = 0;
 
-        ResetDisplays();
-    }
-    
-    public void ManageDependentInput()
-    {
-        if(omegaToggle.isOn)
+        for (int i = 0; i < oscillationsNumber-1; i++)
         {
-            GetFloatFromInputField(ref K, KInputField);
-            GetFloatFromInputField(ref mass, massInputField);
+            GetFloatFromInputField(ref amplitudes[i], amplitudeInputFields[i]);
+            GetFloatFromInputField(ref phis[i], phiInputFields[i]);
+            GetFloatFromInputField(ref omegas[i], omegaInputFields[i]);
 
-            omega = Mathf.Sqrt(K / mass);
-
-            SetInputFieldTextFromFloat(omegaInputField, omega);
+            maxV += amplitudes[i] * omegas[i];
+            maxA += amplitudes[i] * omegas[i] * omegas[i];
         }
 
-        else if (KToggle.isOn)
-        {
-            GetFloatFromInputField(ref omega, omegaInputField);
-            GetFloatFromInputField(ref mass, massInputField);
+        AddIntoLastFloat(amplitudes);
 
-            K = mass * omega * omega;
-
-            SetInputFieldTextFromFloat(KInputField, K);
-
-        }
-
-        else if (massToggle.isOn)
-        {
-            GetFloatFromInputField(ref K, KInputField);
-            GetFloatFromInputField(ref omega, omegaInputField);
-
-            mass = K / (omega * omega);
-
-            SetInputFieldTextFromFloat(massInputField, mass);
-        }
-
-        ResetDisplays();
-
+        ResetTimeAndDisplay();
     }
 
     void ResetTime()
@@ -208,24 +182,36 @@ public class SimpleMotion : MonoBehaviour
 
     void CalculateAndOutputValues()
     {
-        x = amplitude * sinus;
-        v = omega * amplitude * cosinus;
-        a = -omega * omega * x;
+        for (int i = 0; i < oscillationsNumber-1; i++)
+        {
+            x[i] = amplitudes[i] * sinus[i];
+            v[i] = omegas[i] * amplitudes[i] * cosinus[i];
+            a[i] = -omegas[i] * omegas[i] * x[i];
+        }
 
-        SetTextFromFloat(xText, x, "x = ");
-        SetTextFromFloat(vText, v, "v = ");
-        SetTextFromFloat(aText, a, "a = ");
+        AddIntoLastFloat(x);
+        AddIntoLastFloat(v);
+        AddIntoLastFloat(a);
 
-        SetTextFromFloat(ETText, K * amplitude * amplitude, "ET = ");
-        SetTextFromFloat(EPText, K * x * x, "EP = ");
-        SetTextFromFloat(EKText, mass * v * v * 0.5f, "EK = ");
+        for (int i = 0; i < oscillationsNumber; i++)
+        {
+            SetTextFromFloat(xTexts[i], x[i], "x = ");
+            SetTextFromFloat(vTexts[i], v[i], "v = ");
+            SetTextFromFloat(aTexts[i], a[i], "a = ");
+        }
 
     }
 
     void ManagePhasorGraph()
     {
-        phasorTracer.localPosition = new Vector3(amplitude, 0f, 0f);
-        phasorParent.Rotate(new Vector3(0f, 0f, omega * Mathf.PI * Mathf.Rad2Deg * Time.deltaTime));
+        for (int i = 0; i < oscillationsNumber-1; i++)
+        {
+            phasorTracers[i].localPosition = new Vector3(amplitudes[i], 0f, 0f);
+            phasorParents[i].Rotate(new Vector3(0f, 0f, omegas[i] * Mathf.PI * Mathf.Rad2Deg * Time.deltaTime));
+        }
+
+        AddIntoLastTransformPos(phasorTracers);
+
     }
 
     void ResetDisplays()
@@ -239,8 +225,12 @@ public class SimpleMotion : MonoBehaviour
                 break;
 
             case VisibleObjects.PhasorGraph:
-                phasorParent.rotation = Quaternion.identity;
-                phasorParent.Rotate(new Vector3(0f, 0f, Mathf.PI * phi * Mathf.Rad2Deg));
+                for (int i = 0; i < oscillationsNumber-1; i++)
+                {
+                    phasorParents[i].rotation = Quaternion.identity;
+                    phasorParents[i].Rotate(new Vector3(0f, 0f, Mathf.PI * phis[i] * Mathf.Rad2Deg));
+                }
+                AddIntoLastTransformPos(phasorTracers);
                 break;
 
             case VisibleObjects.GraphableGraph:
@@ -289,47 +279,34 @@ public class SimpleMotion : MonoBehaviour
     void ManageGraphableValues()
     {
 
-        float yParam = SetParamFromDropdown(baseDropdown);
+        float yParam = currentTime;
 
-        for (int i = 0; i < tracers.Length; i++)
+        for (int i = 0; i < oscillationsNumber; i++)
         {
-            if (tracers[i].gameObject.activeSelf)
-                SetTracerPos(tracers[i],yParam, SetParamFromDropdown(valuesDropdowns[i]));
+            SetTracerPos(tracers[i], yParam, SetParamFromDropdown(i));
         }
+
+
 
     }
 
     void SetTracerPos(Transform tracer, float xParam, float yParam)
     {
-        
         tracer.position = new Vector3(xScaleFactor * xParam, yScaleFactor * yParam, 0f);
-
     }
 
-    float SetParamFromDropdown(Dropdown dropdown)
+    float SetParamFromDropdown(int i)
     {
-        switch(dropdown.value)
+        switch(valuesDropdown.value)
         {
+            case 0:
+                return x[i]/amplitudes[oscillationsNumber - 1];
+
             case 1:
-                return sinus;
+                return v[i]/maxV ;
 
             case 2:
-                return cosinus;
-
-            case 3:
-                return -sinus;
-
-            case 4:
-                return currentTime;
-
-            case 5:
-                return cosinus * cosinus;
-
-            case 6:
-                return sinus * sinus;
-
-            case 7:
-                return 1;
+                return a[i]/maxA;
 
             default:
                 return 0;
@@ -343,9 +320,32 @@ public class SimpleMotion : MonoBehaviour
         ResetDisplays();
     }
 
-    public void ManageTracerActivity(int index)
+    void AddIntoLastFloat(float[] values)
     {
-        if (valuesDropdowns[index].value == 0) tracers[index].gameObject.SetActive(false);
-        else tracers[index].gameObject.SetActive(true);
+        values[values.Length-1] = 0;
+
+        for (int i = 0; i < values.Length-1; i++)
+        {
+            values[values.Length-1] += values[i];
+        }
+    }
+
+    void AddIntoLastTransformPos(Transform[] values)
+    {
+        values[values.Length-1].position = Vector3.zero;
+
+        for (int i = 0; i < values.Length - 1; i++)
+        {
+            values[values.Length-1].position += values[i].position;
+        }
+    }
+
+    void ManageMarkers()
+    {
+        if (markers[0].parent.gameObject.activeSelf == false) return;
+        for (int i = 0; i < oscillationsNumber-1; i++)
+        {
+            markers[i].position = new Vector3(x[i], -2*i-2, 0f);
+        }
     }
 }
