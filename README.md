@@ -35,4 +35,4 @@ Eventually expand parallel oscillations for more input, use a scroll view and ad
 
 Make the toggles larger and easier to tap
 
-Re-do UI for parallel
+Figure out how to render a 3D trail (drop stationary particles behind the cube?)
