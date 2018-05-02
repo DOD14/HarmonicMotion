@@ -14,6 +14,6 @@ public class ControlRotationBySliders : MonoBehaviour {
 	// Update is called once per frame
 	public void AdjustRotation () {
 
-        transform.rotation = Quaternion.Euler(sliders[0].value, sliders[1].value, sliders[2].value);
+        transform.rotation = Quaternion.Euler(sliders[0].value, sliders[1].value, 0f);
 	}
 }

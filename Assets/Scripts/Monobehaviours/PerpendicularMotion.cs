@@ -166,6 +166,8 @@ public class PerpendicularMotion : MonoBehaviour
     {
         ResetTime();
         ResetDisplays();
+
+        cube.GetComponent<TrailRenderer>().Clear();
     }
 
     void AddIntoLastFloat(float[] values)
