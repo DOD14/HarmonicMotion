@@ -7,7 +7,6 @@ public class RenderLineToMe : MonoBehaviour {
     public Transform firstPosition;
     public Vector3 firstPosV3;
     public bool useTransform = true;
-    public bool dynamic = true;
 
     private LineRenderer lineRenderer;
 
@@ -24,8 +23,6 @@ public class RenderLineToMe : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if(dynamic)
-            lineRenderer.SetPosition(0, firstPosition.position);
         lineRenderer.SetPosition(1, transform.position);
 
 	}
