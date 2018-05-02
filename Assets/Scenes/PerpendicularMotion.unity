@@ -3078,7 +3078,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 600824048}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b50df191989ab41fcb06a0102914ad93, type: 3}
+  m_Script: {fileID: 11500000, guid: 1b956311acd694797823463a94ea41ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   amplitudeInputFields:
@@ -6555,7 +6555,6 @@ MonoBehaviour:
   sliders:
   - {fileID: 823516794}
   - {fileID: 680945231}
-  - {fileID: 0}
 --- !u!1 &1142862625
 GameObject:
   m_ObjectHideFlags: 0
