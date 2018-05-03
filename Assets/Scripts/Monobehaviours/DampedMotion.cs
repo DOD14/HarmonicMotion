@@ -103,7 +103,7 @@ public class DampedMotion : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         UpdateTime();
 
@@ -233,8 +233,8 @@ public class DampedMotion : MonoBehaviour
         SetTextFromFloat(vText, v, "v = ");
         SetTextFromFloat(aText, a, "a = ");
 
-        EK = K * x * x;
-        EP = mass * v * v * 0.5f;
+        EP = K * x * x;
+        EK = mass * v * v * 0.5f;
         ET = EP + EK;
 
         SetTextFromFloat(ETText, ET, "ET = ");
