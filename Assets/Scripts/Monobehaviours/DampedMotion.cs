@@ -74,10 +74,7 @@ public class DampedMotion : MonoBehaviour
     private float v;
     private float a;
 
-    private float currentAmplitude;
-    private float dampedOmega;
     private float b;
-    private float e;
 
     private float currentTime = 0f;
 
@@ -85,12 +82,15 @@ public class DampedMotion : MonoBehaviour
     private float EK;
     private float EP;
 
+    private float initET;
+    private float normalV;
+    private float normalA;
+
     private Rigidbody rb;
 
 
     void Start()
     {
-        e = Mathf.Exp(1);
         rb = cube.GetComponent<Rigidbody>();
 
         GetBaseInput();
@@ -141,7 +141,9 @@ public class DampedMotion : MonoBehaviour
     {
         x = amplitude;
         b = 0.5f * damping / mass;
-        dampedOmega = Mathf.Sqrt(omega * omega - b * b);
+        initET = K * amplitude * amplitude;
+        normalV = Mathf.Sqrt(K / mass) * amplitude;
+        normalA = K * amplitude / mass;
 
         ResetTime();
     }
@@ -220,21 +222,18 @@ public class DampedMotion : MonoBehaviour
 
     void CalculateAndOutputValues()
     {
-        x = cube.transform.position.x;
+        x = rb.position.x;
         a = -K * x - damping * rb.velocity.x;
         rb.AddForce(new Vector3(a, 0f, 0f), ForceMode.Acceleration);
 
-        v = (x - lastX) / Time.deltaTime;
-        lastX = x;
-
-        currentAmplitude = amplitude * Mathf.Exp(-b * currentTime);
+        v = rb.velocity.x;
 
         SetTextFromFloat(xText, x, "x = ");
         SetTextFromFloat(vText, v, "v = ");
         SetTextFromFloat(aText, a, "a = ");
 
         EP = K * x * x;
-        EK = mass * v * v * 0.5f;
+        EK = mass * v * v;
         ET = EP + EK;
 
         SetTextFromFloat(ETText, ET, "ET = ");
@@ -255,7 +254,7 @@ public class DampedMotion : MonoBehaviour
 
             case VisibleObjects.GraphableGraph:
                 foreach (Transform tracer in tracers)
-                    tracer.GetComponent<TrailRenderer>().Clear();
+                { tracer.transform.position = Vector3.zero; tracer.GetComponent<TrailRenderer>().Clear(); Debug.Log("clearing"); }
                 break;
         }
 
@@ -310,25 +309,25 @@ public class DampedMotion : MonoBehaviour
         switch (dropdown.value)
         {
             case 1:
-                return x;
+                return x/amplitude;
 
             case 2:
-                return v;
+                return v/normalV;
 
             case 3:
-                return a;
+                return a/normalA;
 
             case 4:
                 return currentTime;
 
             case 5:
-                return EK;
+                return EK/initET;
 
             case 6:
-                return EP;
+                return EP/initET;
 
             case 7:
-                return ET;
+                return ET/initET;
 
             default:
                 return 0;
@@ -339,7 +338,9 @@ public class DampedMotion : MonoBehaviour
     public void ResetTimeAndDisplay()
     {
         ResetTime();
+
         ResetDisplays();
+
     }
 
     public void ManageTracerActivity(int index)
