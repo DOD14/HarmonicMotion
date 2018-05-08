@@ -74,8 +74,6 @@ public class DampedMotion : MonoBehaviour
     private float v;
     private float a;
 
-    private float b;
-
     private float currentTime = 0f;
 
     private float ET;
@@ -140,7 +138,6 @@ public class DampedMotion : MonoBehaviour
     void SetAdditionalValues()
     {
         x = amplitude;
-        b = 0.5f * damping / mass;
         initET = K * amplitude * amplitude;
         normalV = Mathf.Sqrt(K / mass) * amplitude;
         normalA = K * amplitude / mass;
