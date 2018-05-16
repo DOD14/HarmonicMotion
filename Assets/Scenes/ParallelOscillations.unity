@@ -1334,6 +1334,7 @@ MonoBehaviour:
   firstPosition: {fileID: 1139826691}
   firstPosV3: {x: 0, y: 0, z: 0}
   useTransform: 1
+  dynamic: 0
 --- !u!120 &289863825
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -2872,6 +2873,7 @@ GameObject:
   m_Component:
   - component: {fileID: 600824050}
   - component: {fileID: 600824049}
+  - component: {fileID: 600824051}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -2948,6 +2950,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &600824051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 600824048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f13740548db144924b1173d6723d98cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &613002032
 GameObject:
   m_ObjectHideFlags: 0
@@ -4016,6 +4029,7 @@ MonoBehaviour:
   firstPosition: {fileID: 1139826691}
   firstPosV3: {x: 0, y: 0, z: 0}
   useTransform: 1
+  dynamic: 0
 --- !u!120 &821602687
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -4243,6 +4257,7 @@ MonoBehaviour:
   firstPosition: {fileID: 1139826691}
   firstPosV3: {x: 0, y: 0, z: 0}
   useTransform: 1
+  dynamic: 0
 --- !u!120 &842188708
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -4743,6 +4758,7 @@ MonoBehaviour:
   firstPosition: {fileID: 917924330}
   firstPosV3: {x: 0, y: 0, z: 0}
   useTransform: 1
+  dynamic: 0
 --- !u!120 &917924334
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -6591,6 +6607,7 @@ MonoBehaviour:
   firstPosition: {fileID: 1402154389}
   firstPosV3: {x: 0, y: 0, z: 0}
   useTransform: 1
+  dynamic: 0
 --- !u!120 &1402154393
 LineRenderer:
   m_ObjectHideFlags: 0
