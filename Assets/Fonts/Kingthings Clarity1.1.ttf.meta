@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: e0c741731c820444b9a011bb33fed2bf
+timeCreated: 1510660141
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Kingthings Clarity
+  fontNames:
+  - Kingthings Clarity
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

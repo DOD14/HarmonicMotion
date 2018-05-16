@@ -20,3 +20,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DampedMotion.unity
     guid: 039f322da349546daa4df55789f708b4
+  - enabled: 1
+    path: Assets/Scenes/Waves.unity
+    guid: ddc56c3106a4443e8810618a8b234d80
