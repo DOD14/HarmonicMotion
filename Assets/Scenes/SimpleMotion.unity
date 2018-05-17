@@ -4805,8 +4805,8 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: 12, y: 0, z: 0}
-  - {x: -12, y: 0, z: 1}
+  - {x: 50, y: 0, z: 0}
+  - {x: -50, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 2
     widthMultiplier: 0.1
@@ -5496,8 +5496,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7a43b5807e764acaa95f3e4ab5da261, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  perspectiveZoomSpeed: 0.5
-  orthoZoomSpeed: 0.5
+  perspectiveZoomSpeed: 0.25
+  orthoZoomSpeed: 0.25
 --- !u!114 &1015512760
 MonoBehaviour:
   m_ObjectHideFlags: 0
