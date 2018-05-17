@@ -9,4 +9,10 @@ public class QuitApplication : MonoBehaviour {
 	{
 		Application.Quit ();
 	}
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
+    }
 }
