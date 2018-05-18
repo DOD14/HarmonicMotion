@@ -278,6 +278,13 @@ public class DampedMotion : MonoBehaviour
                 break;
         }
 
+        for (int i = 0; i < valuesDropdowns.Length; i++)
+        {
+            valuesDropdowns[i].interactable = displayOption.Equals(VisibleObjects.GraphableGraph);
+        }
+
+        baseDropdown.interactable = displayOption.Equals(VisibleObjects.GraphableGraph);
+
         ResetDisplays();
     }
 

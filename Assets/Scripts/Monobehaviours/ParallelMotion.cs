@@ -273,6 +273,8 @@ public class ParallelMotion : MonoBehaviour
                 break;
         }
 
+        valuesDropdown.interactable = displayOption.Equals(VisibleObjects.GraphableGraph);
+
         ResetDisplays();
     }
 
