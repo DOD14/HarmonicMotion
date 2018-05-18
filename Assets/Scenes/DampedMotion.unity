@@ -6513,8 +6513,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfac5f8feef854a03ade602aaa6b7d0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yScaleFactor: 2
-  xScaleFactor: 2
+  yScaleFactor: 10
+  xScaleFactor: 10
   amplitudeInputField: {fileID: 2007267101}
   omegaInputField: {fileID: 289717725}
   KInputField: {fileID: 1477677152}

@@ -16,6 +16,27 @@ public class PinchZoom : MonoBehaviour
 
     void Update()
     {
+
+        if (Input.GetKey(KeyCode.UpArrow)||Input.GetKey(KeyCode.DownArrow))
+        {
+            if (camera.orthographic)
+            {
+                // ... change the orthographic size based on the change in distance between the touches.
+                camera.orthographicSize += Input.GetAxis("Vertical");
+
+                // Make sure the orthographic size never drops below zero.
+                camera.orthographicSize = Mathf.Max(camera.orthographicSize, 0.1f);
+            }
+            else
+            {
+                // Otherwise change the field of view based on the change in distance between the touches.
+                camera.fieldOfView += Input.GetAxis("Vertical");
+
+                // Clamp the field of view to make sure it's between 0 and 180.
+                camera.fieldOfView = Mathf.Clamp(camera.fieldOfView, 0.1f, 179.9f);
+            }
+        }
+
         // If there are two touches on the device...
         if (Input.touchCount == 2)
         {

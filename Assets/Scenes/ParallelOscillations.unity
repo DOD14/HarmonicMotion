@@ -3140,8 +3140,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 667e19dad8bb54b02a269036df575a62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yScaleFactor: 2
-  xScaleFactor: 2
+  yScaleFactor: 5
+  xScaleFactor: 5
   amplitudeInputFields:
   - {fileID: 2007267101}
   - {fileID: 1917500819}
