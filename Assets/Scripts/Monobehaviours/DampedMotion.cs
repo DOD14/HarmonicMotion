@@ -251,7 +251,7 @@ public class DampedMotion : MonoBehaviour
 
             case VisibleObjects.GraphableGraph:
                 foreach (Transform tracer in tracers)
-                { tracer.transform.position = Vector3.zero; tracer.GetComponent<TrailRenderer>().Clear(); Debug.Log("clearing"); }
+                { tracer.transform.position = Vector3.zero; tracer.GetComponent<TrailRenderer>().Clear();}
                 break;
         }
 
@@ -264,7 +264,9 @@ public class DampedMotion : MonoBehaviour
             case 0:
                 displayOption = VisibleObjects.System;
 
-                system.SetActive(true);
+                cube.GetComponent<MeshRenderer>().enabled = true;
+                cube.GetComponent<BoxCollider>().enabled = true;
+
                 graphableValuesGraph.SetActive(false);
 
                 break;
@@ -272,11 +274,19 @@ public class DampedMotion : MonoBehaviour
             case 1:
                 displayOption = VisibleObjects.GraphableGraph;
 
-                //system.SetActive(false);
+                cube.GetComponent<MeshRenderer>().enabled = false;
+                cube.GetComponent<BoxCollider>().enabled = false;
                 graphableValuesGraph.SetActive(true);
 
                 break;
         }
+
+        for (int i = 0; i < valuesDropdowns.Length; i++)
+        {
+            valuesDropdowns[i].interactable = displayOption.Equals(VisibleObjects.GraphableGraph);
+        }
+
+        baseDropdown.interactable = displayOption.Equals(VisibleObjects.GraphableGraph);
 
         ResetDisplays();
     }
