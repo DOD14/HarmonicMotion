@@ -14,6 +14,6 @@ public class ChangeMyText : MonoBehaviour {
 
 
         if (playing) myText.text = "Stop";
-        else myText.text = "Play";
+        else myText.text = "Start";
     }
 }

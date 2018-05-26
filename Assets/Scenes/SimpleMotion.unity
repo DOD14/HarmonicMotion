@@ -1098,6 +1098,7 @@ GameObject:
   - component: {fileID: 235318987}
   - component: {fileID: 235318989}
   - component: {fileID: 235318988}
+  - component: {fileID: 235318990}
   m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
@@ -1146,7 +1147,7 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: e0c741731c820444b9a011bb33fed2bf, type: 3}
     m_FontSize: 28
     m_FontStyle: 1
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 2
     m_MaxSize: 40
     m_Alignment: 4
@@ -1162,6 +1163,18 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 235318986}
+--- !u!114 &235318990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 235318986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22bceb62655cb4e8aa86a358a170bf33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: system_option
 --- !u!1 &247427672
 GameObject:
   m_ObjectHideFlags: 0
@@ -1830,6 +1843,7 @@ GameObject:
   - component: {fileID: 336712939}
   - component: {fileID: 336712938}
   - component: {fileID: 336712937}
+  - component: {fileID: 336712940}
   m_Layer: 5
   m_Name: DisplayDropdown
   m_TagString: Untagged
@@ -1957,6 +1971,21 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 336712935}
+--- !u!114 &336712940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 336712935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7572f48025eaa4884b264af389105f01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myKeys:
+  - system_option
+  - phasor_option
+  - graph_option
 --- !u!1 &339024534
 GameObject:
   m_ObjectHideFlags: 0
@@ -7879,7 +7908,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Pause
+  m_Text: Stop
 --- !u!222 &1491870233
 CanvasRenderer:
   m_ObjectHideFlags: 0
