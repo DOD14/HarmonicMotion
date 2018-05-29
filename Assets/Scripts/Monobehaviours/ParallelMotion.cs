@@ -160,8 +160,8 @@ public class ParallelMotion : MonoBehaviour
     public void ToggleTimeScale()
     {
         if (Time.timeScale > 0)
-        { Time.timeScale = 0f; timescaleButtonText.text = "Play"; }
-        else { Time.timeScale = 1f; timescaleButtonText.text = "Pause"; }
+        { Time.timeScale = 0f; timescaleButtonText.text = "Start"; }
+        else { Time.timeScale = 1f; timescaleButtonText.text = "Stop"; }
 
     }
 
