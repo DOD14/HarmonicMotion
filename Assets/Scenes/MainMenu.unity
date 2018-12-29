@@ -2539,7 +2539,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "By M\xE2rza Ana Cristina & B\u0103doi Vlad"
+  m_Text: "By M\xE2rza Ana Cristina"
 --- !u!222 &1887820466
 CanvasRenderer:
   m_ObjectHideFlags: 0
